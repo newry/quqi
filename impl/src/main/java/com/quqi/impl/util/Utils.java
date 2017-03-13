@@ -11,9 +11,15 @@ public class Utils {
 		po.setDateLastModified(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 	}
 
-	public static Calendar getCalender(int hours) {
+	public static Calendar getCalenderWithHour(int hours) {
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.add(Calendar.HOUR, hours);
+		return cal;
+	}
+
+	public static Calendar getCalenderWithMinute(int minutes) {
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		cal.add(Calendar.MINUTE, minutes);
 		return cal;
 	}
 

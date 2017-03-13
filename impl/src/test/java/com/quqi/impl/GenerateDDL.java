@@ -8,6 +8,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import com.quqi.impl.entity.wifi.User;
 import com.quqi.impl.entity.wifi.UserAuthCode;
+import com.quqi.impl.entity.wifi.UserSMSHistory;
 import com.quqi.impl.entity.wifi.UserTracking;
 
 public class GenerateDDL {
@@ -23,6 +24,8 @@ public class GenerateDDL {
 			cfg.addAnnotatedClass(User.class);
 			cfg.addAnnotatedClass(UserTracking.class);
 			cfg.addAnnotatedClass(UserAuthCode.class);
+			cfg.addAnnotatedClass(UserSMSHistory.class);
+
 			SchemaExport export = new SchemaExport(cfg);
 			
 			export.setFormat(true);

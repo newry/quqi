@@ -25,7 +25,7 @@ public class UserAuthCode extends PersistentObject {
 	@Column(name = "ID", unique = true, nullable = false, precision = 22)
 	private Long id;
 
-	@Column(name = "max_address", nullable = false, length = 255)
+	@Column(name = "mac_address", nullable = false, length = 255)
 	private String macAddress;
 
 	@Column(name = "phone_number", nullable = true, length = 64)
