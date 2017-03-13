@@ -1,6 +1,7 @@
 package com.quqi.impl.controller;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,20 +10,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
-import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
-import com.aliyuncs.sms.model.v20160927.SingleSendSmsRequest;
-import com.aliyuncs.sms.model.v20160927.SingleSendSmsResponse;
 import com.quqi.impl.controller.response.Error;
 import com.quqi.impl.controller.response.OperationResponse;
 import com.quqi.impl.controller.response.OperationResult;
@@ -167,7 +164,7 @@ public class UserController {
 	}
 
 	private void sendSms(String phoneNumber, String code) {
-		
+
 		UserSMSHistory userSMSHistory = userSMSHistoryRepository.findByPhoneNumer(phoneNumber,
 				Utils.getCalenderWithMinute(-1));
 		if (userSMSHistory == null) {
@@ -183,17 +180,39 @@ public class UserController {
 	}
 
 	private void doSendSms(String phoneNumber, String code) throws ClientException, ServerException {
-//		IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAIeobj1lz58X4W",
-//				"nJBVoCnYUCo546P4bblDxa70oSIu6w");
-//		DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Sms", "sms.aliyuncs.com");
-//		IAcsClient client = new DefaultAcsClient(profile);
-//		SingleSendSmsRequest request = new SingleSendSmsRequest();
-//		request.setSignName("测试签名");
-//		request.setTemplateCode("SMS_111111");
-//		request.setParamString("{\"code\":\"" + code + "\"}");
-//		request.setRecNum(phoneNumber);// 接收号码
-//		SingleSendSmsResponse httpResponse = client.getAcsResponse(request);
-//		LOG.info(httpResponse.getModel());
+		// IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou",
+		// "LTAIeobj1lz58X4W",
+		// "nJBVoCnYUCo546P4bblDxa70oSIu6w");
+		// DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Sms",
+		// "sms.aliyuncs.com");
+		// IAcsClient client = new DefaultAcsClient(profile);
+		// SingleSendSmsRequest request = new SingleSendSmsRequest();
+		// request.setSignName("测试签名");
+		// request.setTemplateCode("SMS_111111");
+		// request.setParamString("{\"code\":\"" + code + "\"}");
+		// request.setRecNum(phoneNumber);// 接收号码
+		// SingleSendSmsResponse httpResponse = client.getAcsResponse(request);
+		// LOG.info(httpResponse.getModel());
+	}
+
+	@Scheduled(fixedRate = 60 * 60 * 1000L)
+	public void cleanupOldAuthCodes() {
+		LOG.info("Begin to clean up auth codes");
+		List<UserAuthCode> list = userAuthCodeRepository.findByDate(Utils.getCalenderWithHour(-2));
+		if (!CollectionUtils.isEmpty(list)) {
+			userAuthCodeRepository.delete(list);
+		}
+		LOG.info("Finish clean up auth codes, size={}", list.size());
+	}
+
+	@Scheduled(fixedRate = 5 * 60 * 1000L)
+	public void cleanupOldSMSHistory() {
+		LOG.info("Begin to clean up sms history");
+		List<UserSMSHistory> list = this.userSMSHistoryRepository.findByDate(Utils.getCalenderWithMinute(-10));
+		if (!CollectionUtils.isEmpty(list)) {
+			userSMSHistoryRepository.delete(list);
+		}
+		LOG.info("Finish clean up sms history, size={}", list.size());
 	}
 
 }
