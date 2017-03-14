@@ -18,8 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
+import com.aliyuncs.sms.model.v20160927.SingleSendSmsRequest;
+import com.aliyuncs.sms.model.v20160927.SingleSendSmsResponse;
 import com.quqi.impl.controller.response.Error;
 import com.quqi.impl.controller.response.OperationResponse;
 import com.quqi.impl.controller.response.OperationResult;
@@ -180,19 +186,17 @@ public class UserController {
 	}
 
 	private void doSendSms(String phoneNumber, String code) throws ClientException, ServerException {
-		// IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou",
-		// "LTAIeobj1lz58X4W",
-		// "nJBVoCnYUCo546P4bblDxa70oSIu6w");
-		// DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Sms",
-		// "sms.aliyuncs.com");
-		// IAcsClient client = new DefaultAcsClient(profile);
-		// SingleSendSmsRequest request = new SingleSendSmsRequest();
-		// request.setSignName("测试签名");
-		// request.setTemplateCode("SMS_111111");
-		// request.setParamString("{\"code\":\"" + code + "\"}");
-		// request.setRecNum(phoneNumber);// 接收号码
-		// SingleSendSmsResponse httpResponse = client.getAcsResponse(request);
-		// LOG.info(httpResponse.getModel());
+		IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAIeobj1lz58X4W",
+				"nJBVoCnYUCo546P4bblDxa70oSIu6w");
+		DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Sms", "sms.aliyuncs.com");
+		IAcsClient client = new DefaultAcsClient(profile);
+		SingleSendSmsRequest request = new SingleSendSmsRequest();
+		request.setSignName("曲奇大数据");
+		request.setTemplateCode("SMS_53835195");
+		request.setParamString("{\"code\":\"" + code + "\"}");
+		request.setRecNum(phoneNumber);// 接收号码
+		SingleSendSmsResponse httpResponse = client.getAcsResponse(request);
+		LOG.info(httpResponse.getModel());
 	}
 
 	@Scheduled(fixedRate = 60 * 60 * 1000L)
@@ -205,10 +209,10 @@ public class UserController {
 		LOG.info("Finish clean up auth codes, size={}", list.size());
 	}
 
-	@Scheduled(fixedRate = 5 * 60 * 1000L)
+	@Scheduled(fixedRate = 10 * 60 * 1000L)
 	public void cleanupOldSMSHistory() {
 		LOG.info("Begin to clean up sms history");
-		List<UserSMSHistory> list = this.userSMSHistoryRepository.findByDate(Utils.getCalenderWithMinute(-10));
+		List<UserSMSHistory> list = this.userSMSHistoryRepository.findByDate(Utils.getCalenderWithMinute(-15));
 		if (!CollectionUtils.isEmpty(list)) {
 			userSMSHistoryRepository.delete(list);
 		}
