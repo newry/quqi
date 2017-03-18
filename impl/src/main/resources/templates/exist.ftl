@@ -13,7 +13,9 @@
 
 <div style="text-align: center;margin:40px 0 50px 0;"><img src="/image/logo.png" width="200px" /></div>
 <p class="cen">欢迎您再次光临</p>
+<!--
 <a href="#" onclick="javascript:tracking()"><div style="text-align: center;width:70%;margin:0 auto;margin-top: 35px;"><p class="d">点击即可连接无线网络</p></div></a>
+-->
 <p class="cen" style="margin-top:55px;">您已确认链接网络的相关政策</p>
 </body>
 <script type="text/javascript">
@@ -27,6 +29,7 @@
 		}).success(function() {
 		});
 	}
+	tracking();
 	
 </script>
 
